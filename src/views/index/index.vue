@@ -51,7 +51,7 @@ watch(
   <div class="index-box">
     <!-- Video background -->
     <video class="video-bg" autoplay muted loop playsinline ref="videoBgRef">
-      <source src="/video/f1feb4f37e2d379716cfb28da0019469_raw.mp4" type="video/mp4" />
+      <source :src="'/video/f1feb4f37e2d379716cfb28da0019469_raw.mp4'" type="video/mp4" />
     </video>
     <div class="contetn_left">
       <!-- <div class="pagetab">
