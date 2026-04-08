@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260404-2" />
+  <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg?v=20260404-2" />
+  <title>演示视频</title>
+  <style>
+    body {
+      margin: 0;
+      background: #17120f;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #f5f0e8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .back-btn {
+      position: fixed;
+      left: 16px;
+      top: 14px;
+      z-index: 9;
+      padding: 6px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(201,169,110,0.45);
+      background: rgba(26,20,16,0.75);
+      color: #d4a847;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .video-wrap {
+      width: min(1200px, 92vw);
+      border: 1px solid rgba(201, 169, 110, 0.35);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 28px rgba(0,0,0,0.35);
+      background: #0f0d0b;
+    }
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+      max-height: 84vh;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="history.back()">返回</button>
+  <div class="video-wrap">
+    <video controls autoplay>
+      <source src="/video/f1feb4f37e2d379716cfb28da0019469_raw.mp4" type="video/mp4" />
+      您的浏览器不支持视频播放。
+    </video>
+  </div>
+</body>
+</html>

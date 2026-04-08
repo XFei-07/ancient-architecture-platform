@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260404-2" />
+  <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg?v=20260404-2" />
+  <title>华夏古建 3D 沉浸式展厅</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1a1410;
+      overflow: hidden;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    canvas { display: block; }
+
+    /* Top title bar */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 56px;
+      background: linear-gradient(to bottom, rgba(26,20,16,0.95) 0%, rgba(26,20,16,0.6) 80%, transparent 100%);
+      border-bottom: 1px solid rgba(201,169,110,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .top-title {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 6px;
+      background: linear-gradient(92deg, #C9A96E 0%, #F0D89D 50%, #C9A96E 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .btn-back {
+      position: absolute;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 6px 18px;
+      background: rgba(26,20,16,0.8);
+      border: 1px solid rgba(201,169,110,0.5);
+      border-radius: 4px;
+      color: #D4A847;
+      font-size: 14px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+    }
+    .btn-back:hover {
+      background: rgba(201,169,110,0.15);
+      box-shadow: 0 0 10px rgba(201,169,110,0.3);
+    }
+
+    /* Loading overlay */
+    #loading-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #1a1410;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      transition: opacity 0.6s;
+    }
+    #loading-overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loading-text {
+      color: #C9A96E;
+      font-size: 20px;
+      letter-spacing: 4px;
+      margin-bottom: 20px;
+    }
+    .loading-bar-wrap {
+      width: 260px;
+      height: 4px;
+      background: rgba(201,169,110,0.15);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .loading-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #C9A96E, #F0D89D);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    .loading-percent {
+      color: #E8D5B5;
+      font-size: 14px;
+      margin-top: 10px;
+      letter-spacing: 2px;
+    }
+
+    /* Bottom hint */
+    .hint-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 24px;
+      background: rgba(26,20,16,0.8);
+      border: 1px solid rgba(201,169,110,0.25);
+      border-radius: 20px;
+      color: #E8D5B5;
+      font-size: 13px;
+      letter-spacing: 2px;
+      z-index: 100;
+      opacity: 0.8;
+    }
+
+    /* Left sidebar — building selector */
+    .left-sidebar {
+      position: fixed;
+      left: 24px;
+      top: 80px;
+      width: 180px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sidebar-item {
+      padding: 12px 16px;
+      background: rgba(26,20,16,0.85);
+      border: 1px solid rgba(201,169,110,0.25);
+      border-radius: 6px;
+      color: #E8D5B5;
+      font-size: 14px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    .sidebar-item:hover {
+      background: rgba(201,169,110,0.12);
+      border-color: rgba(201,169,110,0.5);
+    }
+    .sidebar-item.active {
+      background: rgba(201,169,110,0.15);
+      border-color: #D4A847;
+      color: #D4A847;
+      font-weight: bold;
+      box-shadow: 0 0 12px rgba(201,169,110,0.2);
+    }
+
+    /* Info panel */
+    .info-panel {
+      position: fixed;
+      right: 24px;
+      top: 80px;
+      width: 320px;
+      max-height: calc(100vh - 120px);
+      padding: 18px;
+      background: rgba(26,20,16,0.9);
+      border: 1px solid rgba(201,169,110,0.3);
+      border-radius: 6px;
+      z-index: 100;
+      overflow-y: auto;
+    }
+    .info-panel::-webkit-scrollbar { width: 4px; }
+    .info-panel::-webkit-scrollbar-thumb { background: rgba(156,122,84,0.4); border-radius: 2px; }
+    .info-panel h3 {
+      color: #D4A847;
+      font-size: 18px;
+      margin-bottom: 10px;
+      letter-spacing: 3px;
+      font-weight: 900;
+    }
+    .info-panel .intro-brief {
+      color: #E8D5B5;
+      font-size: 13px;
+      line-height: 1.9;
+      opacity: 0.9;
+    }
+    .info-panel .intro-full {
+      color: #E8D5B5;
+      font-size: 12px;
+      line-height: 1.9;
+      opacity: 0.85;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+    }
+    .info-panel .intro-full.expanded {
+      max-height: 2000px;
+    }
+    .info-panel .section-title {
+      color: #C9A96E;
+      font-size: 13px;
+      font-weight: bold;
+      margin: 12px 0 4px;
+      letter-spacing: 1px;
+    }
+    .info-panel .section-item {
+      color: #E8D5B5;
+      font-size: 12px;
+      line-height: 1.8;
+      padding-left: 8px;
+      margin: 2px 0;
+      opacity: 0.85;
+    }
+    .btn-expand {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 6px 0;
+      background: transparent;
+      border: 1px solid rgba(201,169,110,0.35);
+      border-radius: 4px;
+      color: #D4A847;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-expand:hover {
+      background: rgba(201,169,110,0.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading -->
+  <div id="loading-overlay">
+    <div class="loading-text">古建模型加载中</div>
+    <div class="loading-bar-wrap">
+      <div class="loading-bar" id="loading-bar"></div>
+    </div>
+    <div class="loading-percent" id="loading-percent">0%</div>
+  </div>
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <button class="btn-back" onclick="window.close(); history.back();">返回大屏</button>
+    <span class="top-title">3D 沉浸式古建展厅</span>
+  </div>
+
+  <!-- 3D Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- Hint -->
+  <div class="hint-bar">鼠标拖拽旋转 · 滚轮缩放 · 右键平移</div>
+
+  <!-- Left sidebar — building selector -->
+  <div class="left-sidebar">
+    <div class="sidebar-item active" id="btn-qiaoliang" onclick="switchBuilding('qiaoliang')">中式古桥营造</div>
+    <div class="sidebar-item" id="btn-siheyuan" onclick="switchBuilding('siheyuan')">北京四合院</div>
+    <div class="sidebar-item" id="btn-guanshu" onclick="switchBuilding('guanshu')">官署大堂</div>
+    <div class="sidebar-item" id="btn-pailou" onclick="switchBuilding('pailou')">礼制牌楼</div>
+    <div class="sidebar-item" id="btn-pingyao" onclick="switchBuilding('pingyao')">平遥古城建筑</div>
+    <div class="sidebar-item" id="btn-lingyuan" onclick="switchBuilding('lingyuan')">皇家行宫林苑</div>
+  </div>
+
+  <!-- Info panel -->
+  <div class="info-panel" id="info-panel"></div>
+
+  <script>
+    // ---- Building data registry ----
+    const buildings = {
+      qiaoliang: {
+        model: '/models/untitled.glb',
+        exposure: 1.2,
+        title: '古代桥梁类：中式古桥营造制式',
+        brief: '中式古桥营造制式集中展现了中国古代在水利交通与园林理水工程中的巅峰智慧。从跨越江河的单孔石拱，到点缀水乡的折线平桥，中国古桥不仅是克服地理障碍的实用交通设施，更是“因地制宜、天人合一”空间美学的集大成者。本组模型通过模块化的构件拆解与重组，全景式呈现了中国传统石构桥梁的形态演变与结构体系。',
+        sections: [
+          { title: '一、建筑功能与核心用途', items: [
+            '水陆交通枢纽：桥梁是古代城镇化水网交错地带的核心节点，承载着物资流转与行人往来的核心交通功能。',
+            '园林理水与空间划分：在古代公共园林或官府建筑群中，桥梁常被用作划分水面层次、增加空间深度的手段。通过平桥的贴水或拱桥的飞跨，打破水面的单调感。',
+            '公共文化空间：桥面及桥堍（桥两端）往往是古代商贩聚集、信息交流的重要场所，是水乡社会世俗生活的微缩舞台。'
+          ] },
+          { title: '二、营造结构与技术特色', items: [
+            '拱券与力学传导：模型中展示了经典的半圆石拱桥。其精妙之处在于利用石块（券石）的相互挤压形成拱圈，将向下的重力转化为向外的推力，无需任何粘合剂即可屹立千年（如赵州桥的敞肩拱结构）。',
+            '石构木作化：从下方丰富的栏杆组件可以看出，古代工匠在处理石材时，常借用木结构的“榫卯”逻辑。望柱（立柱）与栏板（横板）之间通过精密咬合连接，既坚固又便于模块化预制与拼装。',
+            '形制的多样性：展品涵盖了从最基础的“梁式石平桥”到高耸的“单孔拱桥”，再到带有多重曲线的“多孔拱桥”，完整再现了古代工匠根据不同水文条件所采取的工程策略。'
+          ] },
+          { title: '三、空间美学与文化内涵', items: [
+            '虚实相生的水影美学：拱桥的设计充分考虑了倒影。半圆的桥拱与水中的倒影合二为一，形成一轮“满月”，这在中国古典美学中象征着圆满与和谐。',
+            '细节中的礼制与祈愿：桥梁的望柱柱头上通常雕刻有石狮、莲花或云纹；栏板上则雕有瑞兽或几何暗纹。这些不仅是视觉装饰，更寄托了古代先民镇水避灾、祈求平安的文化诉求。'
+          ] },
+          { title: '四、历史故事与文化传播', items: [
+            '工程史的实物史料：中国古桥（如安济桥、宝带桥）在世界土木工程史上占据重要地位。通过这种 3D 模块化展示，能够让观众直观解构古代力学之美，打破了传统的平面阅读体验。',
+            '数字造物的组合与重生：借助这套完整的数字构件库，我们可以像搭积木一样，在虚拟空间中复原那些存在于历史文献中、但现实中已毁坏的古代名桥，为文化遗产的数字化传承提供了无限可能。'
+          ] }
+        ]
+      },
+      siheyuan: {
+        model: '/models/siheyuan.glb',
+        exposure: 1.2,
+        title: '北京四合院',
+        brief: '中国传统合院式建筑的典型代表，"四"指东西南北四面房屋，"合"是围合出中间庭院，呈口字形。坐北朝南，大门多开在东南角巽位。雏形见于西周，明清达鼎盛，是北方民居代表与国家级非遗。',
+        sections: [
+          { title: '一、历史源流', items: ['雏形见于西周，汉代逐步成型，唐宋推广，元代定都北京后确立"胡同+四合院"的城市肌理，明清达鼎盛并定型为京师特有的风格。'] },
+          { title: '二、标准布局与空间等级', items: [
+            '一进院（基础）：大门+影壁→倒座房→垂花门→正院；正房（北房，长辈居，3正2耳共5间，台基最高）、东西厢房（晚辈居）；抄手游廊连接各房，雨天不湿鞋。',
+            '多进院：二进、三进（中产士绅）、四进+跨院/花园（王府、高官）；最后有后罩房。外墙高大封闭，内部开敞，庭院种海棠、石榴、紫藤，置鱼缸、假山。'
+          ] },
+          { title: '三、建筑特色与工艺', items: [
+            '抬梁+穿斗木构架，榫卯连接，抗震；屋顶多硬山/悬山，青砖灰瓦，朱红柱门。大门等级：王府大门>广亮大门>金柱大门>如意门>墙垣门。',
+            '影壁砖雕精美，遮挡视线、聚气辟邪。隔扇门、支摘窗，夏季通风，冬季糊纸保暖，木雕题材多为花鸟吉祥图案。'
+          ] },
+          { title: '四、文化内涵', items: ['尊卑有序、长幼分明、内外有别，是儒家伦理的空间体现。坐北朝南，庭院调节小气候，雨水渗地，体现"天人合一"。院落更是老北京民俗载体，节庆团聚、婚丧嫁娶都在院中举行。'] },
+          { title: '五、现状与保护', items: [
+            '近现代人口增长，多户混居成"大杂院"，部分结构受损。北京已划定历史文化街区进行修缮保护，部分改为民宿、博物馆、私人宅邸。',
+            '代表：恭王府、黑芝麻胡同13号、茅盾故居等。'
+          ] }
+        ]
+      },
+      guanshu: {
+        model: '/models/chinese_hall.glb',
+        exposure: 2.5,
+        title: '官署大堂',
+        brief: '官署大堂是中国古代地方行政机构（如县衙、府衙）的核心建筑，是官吏履行公职、发布政令、举行重大典礼以及进行司法审判的法定场所。在古代建筑等级制度中，它是地方权力的物理象征，体现了"公生明，廉生威"的政治治理理想。',
+        sections: [
+          { title: '一、建筑功能与核心用途', items: [
+            '政务中心：大堂是地方长官（如知县、知府）接见下属、宣读朝廷诏书、举行岁首朝贺等官方仪式的场所。',
+            '司法审判：作为古代的"法庭"，大堂是进行公开审判、维护社会秩序的威严之地。',
+            '空间布局：建筑通常位于官署中轴线的核心位置，前方设有宽阔的月台（丹墀），供衙役站班或举行仪式，增强了建筑的肃穆感。'
+          ] },
+          { title: '二、营造结构与技术特色', items: [
+            '面阔与进深：该模型展示了典型的"明三暗五"开间布局。明间（中央位置）宽大，用于安置长官的公案（办公桌），两侧次间则用于存放文书档案或供随从站立。',
+            '抬梁式架构：建筑内部采用木构抬梁式结构，支撑起厚重的歇山式屋顶。这种结构允许室内空间更加开阔，便于官员视事和公众围观。',
+            '屋顶与脊饰：采用灰瓦覆盖，屋脊平直且装饰有吻兽，虽不如皇家建筑那般绚丽，但线条简洁有力，彰显了地方政权的稳重与严谨。'
+          ] },
+          { title: '三、空间美学与文化内涵', items: [
+            '官防等级制：官署建筑有着严格的等级限定。大堂的台基高度、斗拱尺寸以及大门的色彩都有明确律法规定。该模型精准还原了明清时期地方官衙的营造规格，严禁逾越，体现了古代社会的礼制等级。',
+            '威严氛围营造：建筑整体色调沉稳，立柱粗壮，空间感深邃。在大屏交互中，可以清晰观察到其"前轩后廊"的设计，这不仅是为了遮阳避雨，更是为了在物理空间上拉开管理者与被管理者的距离，营造一种"庄严公正"的心理压力。'
+          ] },
+          { title: '四、历史故事与文化传播', items: [
+            '"清廉文化"的载体：官署大堂不仅是办公楼，更是文化宣教场所。大堂屏风后常绘有"山海图"（象征清如海水、坚如磐石），门前立有"公生明"刻石。这些元素通过数字孪生技术得以活化，向观众传递中国古代"为官之道"的伦理思想。',
+            '数字化传承价值：许多古代县衙在历史变迁中损毁，仅存极少数（如河南内乡县衙）。通过该 3D 模型，观众可以跨越时空限制，直观感受古代基层治理的空间逻辑，是研究中国古代行政制度史的重要数字资产。'
+          ] }
+        ]
+      },
+      pailou: {
+        model: '/models/chinese_archway_01.glb',
+        exposure: 1.2,
+        title: '礼制牌楼',
+        brief: '礼制牌楼（又称牌坊）是中国古代由官府敕建或批准的标志性门洞式建筑。它既是古代城市规划中划分空间的重要地标，更是国家意志与礼教思想的物理载体。作为一种特殊的"官方礼制符号"，它主要用于表彰功德、科第或宣扬伦理，是古代社会价值导向的最高荣誉象征。',
+        sections: [
+          { title: '一、建筑功能与核心用途', items: [
+            '空间导航与地标：在古代城市中，牌楼常设于街道的起点、终点或官署门前，起到"门户"和标识区域功能的作用。',
+            '礼制宣传：它是古代社会激励体系的一部分，通过刻在牌楼上的文字（匾额、对联），向过往民众传递勤政、忠孝、节义等主流核心价值观。',
+            '仪式空间：这种开敞式的结构并不用于居住，而是创造一种"仪式感"，使人在穿行其中时产生敬畏之心，从而加强官府对社会空间的精神管理。'
+          ] },
+          { title: '二、营造结构与技术特色', items: [
+            '冲天式柱头：该模型展示了典型的"冲天式"结构。立柱高出屋檐，柱头常雕有蹲兽（如犼），象征向上沟通天意，向下监察民情。',
+            '牌楼比例：建筑结构紧凑，强调横向的稳定感与纵向的挺拔感。横梁（额枋）与立柱通过精密的榫卯结构连接，虽无墙体，却能屹立数百年不倒。',
+            '屋檐与雕刻：牌楼顶部覆盖琉璃瓦或仿石瓦，檐下斗拱密布。模型细致刻画了楼头与花板的比例，这种"重檐多层"的造型增加了视觉的层次感，体现了高超的石刻或木雕工艺。'
+          ] },
+          { title: '三、空间美学与文化内涵', items: [
+            '等级制度的体现：牌楼的规格（如"几柱几楼"）有着严格的限制。例如"四柱三间五楼"的形制通常需经皇帝特许或官府报备，体现了古代官场中极高的政治荣誉等级。',
+            '公共视觉中心：相比于官署大堂的庄严封闭，牌楼是完全开放的公共艺术。它矗立在街头，将复杂的营造艺术（雕、刻、绘）集中展示，成为古代城市中最具辨识度的"文化纪念碑"。'
+          ] },
+          { title: '四、历史故事与文化传播', items: [
+            '"官府治理"的缩影：许多历史著名的牌楼（如平遥古城的贞节牌坊、徽州的功德牌坊）背后都关联着真实的政务或地方志记载。通过该 3D 模型，我们可以研究古代官府如何通过建筑手段进行社会治理与思想动员。',
+            '数字文化遗产的重构：在现代城市建设中，许多原始牌楼已毁。利用数字建模还原其完整的空间形制，不仅是建筑学上的记录，更是对中国古代"表彰精神"和"地标文化"的数字化重生。'
+          ] }
+        ]
+      },
+      pingyao: {
+        model: '/models/pingyao_city_walls_-_china.glb',
+        exposure: 1.2,
+        title: '平遥古城建筑',
+        brief: '平遥古城建筑是中国境内保存最完整的明清时期县城样板，被誉为"研究中国古代城市营建制度的活化石"。其核心建筑如城门楼、市楼等，不仅是古代官府进行城市防御、商业管理与信息发布的重要空间，更深刻体现了明清时期"晋商文化"影响下官民共建、注重实用与礼制并行的营城智慧。',
+        sections: [
+          { title: '一、建筑功能与核心用途', items: [
+            '城市防御与管理：城门楼是古代官府控制人员进出、守卫城市安全的第一道防线。其上层空间常作为官吏了望水情、敌情的哨所。',
+            '商业地标：古城中轴线上的市楼（如金井楼），是古代繁华商业街区的视觉中心。它曾被官府用于悬挂公告或在重大节庆时作为演乐平台，是世俗生活与官方管理的连接点。',
+            '空间控制：这种高大的阁楼式建筑在平面规划上起到了"锁轴"的作用，定义了古城井字形街道的空间格局，展现了严密的城市治理思维。'
+          ] },
+          { title: '二、营造结构与技术特色', items: [
+            '重檐木构阁楼：该模型展示了典型的重檐歇山顶砖木结构。底层为高大的砖石台基，中空为十字穿心拱洞，上层为木构阁楼。这种"下砖上木"的组合，既保证了建筑的稳固耐火，又赋予了上层灵动的艺术性。',
+            '色彩与材质：不同于皇家建筑的红墙黄瓦，平遥建筑多采用青砖灰瓦，局部饰以绿、黄琉璃瓦剪边。这种低调而严谨的配色，符合古代地方官府的营造标准，同时兼顾了晋商朴实稳重的审美。',
+            '精密的斗拱设计：檐下的斗拱不仅起到了支撑挑檐的力学作用，其密集的排布更形成了强烈的节奏感，体现了明清时期地方建筑工艺的成熟度。'
+          ] },
+          { title: '三、空间美学与文化内涵', items: [
+            '"外雄内秀"的设计：外观呈现出坚不可摧的军事堡垒质感，内部木构则精雕细琢。这种设计隐喻了古代社会"严于律法（官）、富于生活（商）"的双重特质。',
+            '儒家思想的渗透：城池的布局遵循"方正、对称"的理念，城门、市楼与县衙互为依托，构建了一个高度有序、主次分明的权力空间网络，是古代"礼法治世"思想的缩影。'
+          ] },
+          { title: '四、历史故事与文化传播', items: [
+            '"汇通天下"的见证者：作为中国古代金融中心，平遥的每一座阁楼都见证过晋商票号的兴衰。它是中国古代社会向近现代转型过程中，商业建筑与官方营城制度结合的最佳范例。',
+            '实景扫描的数字重生：该模型利用高精度数字技术，还原了城墙与门楼的岁月风蚀感。这种"废墟美学"与"数字存档"的结合，使观众能突破物理限制，探索这座世界文化遗产在防御布局和空间美学上的独特魅力。'
+          ] }
+        ]
+      },
+      lingyuan: {
+        model: '/models/ancient_chinese_courtyard_park.glb',
+        exposure: 1.2,
+        title: '皇家行宫林苑',
+        brief: '皇家行宫林苑是中国古代建筑成就的最高集成形式，是帝王在都城之外或离宫中，集行政朝政、居住休憩与自然景观于一体的大型复合建筑群。它不仅是皇家威权的物理延伸，更是中国古代"天人合一"哲学思想与巅峰营建技艺的集中展示。此类建筑通常规模宏大，通过严谨的轴线与自由的园林布局相结合，体现了皇家生活"外礼内乐"的空间逻辑。',
+        sections: [
+          { title: '一、建筑功能与核心用途', items: [
+            '多功能行政中心：行宫的前半部通常设立规整的院落与大殿，用于帝王巡狩期间接见地方官员、处理政务或发布诏令。',
+            '皇室休憩空间：后半部则为开阔的林苑，设有水池、凉亭与曲折的长廊，供皇室成员散步、吟咏、举办宫廷宴会以及避暑休憩。',
+            '祭祀与礼仪：这种大型群组内往往包含特定的礼制建筑（如碑亭或祭坛），用于帝王在驻蹠期间进行小规模的礼仪活动。'
+          ] },
+          { title: '二、营造结构与技术特色', items: [
+            '轴线与园林的融合：该模型完整展示了"前朝后寝、园林绕殿"的布局。前部院落采用严格的中轴对称抬梁式结构，彰显皇权的稳重；后部则利用复杂的水体和叠石打破对称，呈现出灵动的自然美感。',
+            '游廊连接体系：建筑群之间通过漫长的穿山廊、水榭长廊相互连接。这种结构不仅解决了北方遮阳、南方避雨的实用需求，更在视觉上串联起不同功能的院落，形成步移景异的透视效果。',
+            '高等级屋顶样式：建筑群中包含了歇山顶、攒尖顶等多种高级屋顶形制。模型细致刻画了脊兽与飞檐的比例，体现了古代营造法式中对皇家规格的严苛要求。'
+          ] },
+          { title: '三、空间美学与文化内涵', items: [
+            '"普天之下"的缩影：皇家林苑往往试图在有限的空间内模拟全国的山川名胜（如承德避暑山庄对江南景观的模拟）。这种"移天缩地"的设计手法，寓意着帝王对疆域的绝对掌控与对自然造化的敬畏。',
+            '礼乐文明的载体：规整的办公区代表"礼（Order）"，蜿蜒的园林区代表"乐（Harmony）"。这种空间对比，生动诠释了古代儒家文化中治国与养性并重的政治美学。'
+          ] },
+          { title: '四、历史故事与文化传播', items: [
+            '"移动行宫"的历史见证：历史上如康熙、乾隆南巡时所居住的行宫，是多民族文化交流与地方治理的重要据点。通过该 3D 模型，观众可以直观理解古代帝王如何利用建筑空间来实现政令下达与民情考察。',
+            '数字档案的保护意义：许多宏伟的皇家园林（如圆明园）已在历史烟云中损毁。利用此类高集成度的 3D 模型进行交互展示，能够让大众身临其境地感受古代巅峰营造技艺的华彩，是传播中国古建文化不可或缺的数字媒介。'
+          ] }
+        ]
+      }
+    };
+
+    let currentBuilding = 'qiaoliang';
+
+    function renderInfoPanel(key) {
+      const b = buildings[key];
+      let sectionsHtml = '';
+      b.sections.forEach(s => {
+        sectionsHtml += '<div class="section-title">' + s.title + '</div>';
+        s.items.forEach(item => {
+          sectionsHtml += '<div class="section-item">' + item + '</div>';
+        });
+      });
+
+      document.getElementById('info-panel').innerHTML =
+        '<h3>' + b.title + '</h3>' +
+        '<div class="intro-brief">' + b.brief + '</div>' +
+        '<div class="intro-full" id="introFull">' + sectionsHtml + '</div>' +
+        '<button class="btn-expand" id="btnExpand" onclick="toggleExpand()">展开全部</button>';
+    }
+
+    function toggleExpand() {
+      const el = document.getElementById('introFull');
+      const btn = document.getElementById('btnExpand');
+      if (el.classList.contains('expanded')) {
+        el.classList.remove('expanded');
+        btn.textContent = '展开全部';
+      } else {
+        el.classList.add('expanded');
+        btn.textContent = '收起';
+      }
+    }
+
+    window.switchBuilding = function(key) {
+      if (key === currentBuilding) return;
+      currentBuilding = key;
+
+      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+      document.getElementById('btn-' + key).classList.add('active');
+
+      renderInfoPanel(key);
+
+      window.dispatchEvent(new CustomEvent('switch-model', { detail: { key: key } }));
+    };
+
+    // Initial render
+    renderInfoPanel('qiaoliang');
+  </script>
+
+  <!-- Three.js via CDN -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+    // Scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1a1410);
+    scene.fog = new THREE.FogExp2(0x1a1410, 0.002);
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(80, 60, 80);
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.8;
+    controls.maxPolarAngle = Math.PI / 2.1;
+    controls.minDistance = 10;
+    controls.maxDistance = 300;
+
+    // Lights — warm tone
+    const ambientLight = new THREE.AmbientLight(0xE8D5B5, 0.6);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xFFF5E0, 1.2);
+    dirLight.position.set(50, 80, 50);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 500;
+    dirLight.shadow.camera.left = -100;
+    dirLight.shadow.camera.right = 100;
+    dirLight.shadow.camera.top = 100;
+    dirLight.shadow.camera.bottom = -100;
+    scene.add(dirLight);
+
+    const fillLight = new THREE.DirectionalLight(0xC9A96E, 0.4);
+    fillLight.position.set(-30, 40, -30);
+    scene.add(fillLight);
+
+    const hemiLight = new THREE.HemisphereLight(0xF0D89D, 0x1a1410, 0.3);
+    scene.add(hemiLight);
+
+    // Ground plane
+    const groundGeo = new THREE.PlaneGeometry(600, 600);
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x2a2018,
+      roughness: 0.95,
+      metalness: 0.05,
+    });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.1;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Load model
+    const loadingBar = document.getElementById('loading-bar');
+    const loadingPercent = document.getElementById('loading-percent');
+    const loadingOverlay = document.getElementById('loading-overlay');
+
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
+
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
+
+    let currentModel = null;
+
+    function loadModel(url, showOverlay, exposure) {
+      renderer.toneMappingExposure = exposure || 1.2;
+      if (showOverlay) {
+        loadingOverlay.style.display = 'flex';
+        loadingOverlay.classList.remove('fade-out');
+        loadingBar.style.width = '0%';
+        loadingPercent.textContent = '0%';
+      }
+
+      // Remove previous model
+      if (currentModel) {
+        scene.remove(currentModel);
+        currentModel.traverse((child) => {
+          if (child.isMesh) {
+            child.geometry.dispose();
+            if (child.material.map) child.material.map.dispose();
+            child.material.dispose();
+          }
+        });
+        currentModel = null;
+      }
+
+      loader.load(
+        url,
+        (gltf) => {
+          const model = gltf.scene;
+
+          // Auto-center and scale
+          const box = new THREE.Box3().setFromObject(model);
+          const size = box.getSize(new THREE.Vector3());
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const scale = maxDim > 0 ? 60 / maxDim : 1;
+          model.scale.setScalar(scale);
+
+          // Re-compute bounding box after scaling
+          const boxScaled = new THREE.Box3().setFromObject(model);
+          const centerScaled = boxScaled.getCenter(new THREE.Vector3());
+          const sizeScaled = boxScaled.getSize(new THREE.Vector3());
+
+          // Center horizontally, sit on ground
+          model.position.x -= centerScaled.x;
+          model.position.z -= centerScaled.z;
+          model.position.y -= boxScaled.min.y;
+
+          model.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
+
+          scene.add(model);
+          currentModel = model;
+
+          // Adjust camera to fit
+          const dist = Math.max(sizeScaled.x, sizeScaled.z) * 1.5;
+          camera.position.set(dist, dist * 0.6, dist);
+          controls.target.set(0, sizeScaled.y * 0.3, 0);
+          controls.update();
+
+          // Hide loading
+          loadingOverlay.classList.add('fade-out');
+          setTimeout(() => { loadingOverlay.style.display = 'none'; }, 600);
+        },
+        (xhr) => {
+          if (xhr.total > 0) {
+            const pct = Math.round((xhr.loaded / xhr.total) * 100);
+            loadingBar.style.width = pct + '%';
+            loadingPercent.textContent = pct + '%';
+          }
+        },
+        (error) => {
+          console.error('Model load error:', error);
+          loadingPercent.textContent = '加载失败，请刷新重试';
+        }
+      );
+    }
+
+    // Initial load
+    loadModel('/models/untitled.glb', true, 1.2);
+
+    // Listen for building switch events
+    window.addEventListener('switch-model', (e) => {
+      const key = e.detail.key;
+      const b = buildings[key];
+      if (b && b.model) loadModel(b.model, true, b.exposure);
+    });
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

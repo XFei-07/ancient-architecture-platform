@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260404-2" />
+  <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg?v=20260404-2" />
+  <title>中国古建筑可视化平台 - 来源目录</title>
+  <style>
+    body { margin: 0; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #17120f; color: #f5f0e8; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 28px 20px 60px; line-height: 1.7; }
+    h1 { color: #d4a847; margin: 0 0 16px; }
+    h2 { color: #c9a96e; margin-top: 28px; border-left: 3px solid #8c4356; padding-left: 10px; }
+    .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,169,110,0.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+    a { color: #f0d89d; }
+    .small { color: rgba(232,213,181,0.75); font-size: 14px; }
+    .back-btn {
+      position: fixed;
+      left: 16px;
+      top: 14px;
+      z-index: 9;
+      padding: 6px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(201,169,110,0.45);
+      background: rgba(26,20,16,0.75);
+      color: #d4a847;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .trace-list {
+      margin-top: 8px;
+      padding-left: 18px;
+      color: rgba(232, 213, 181, 0.92);
+    }
+    .trace-list li { margin-bottom: 4px; }
+    .trace-key { color: rgba(201, 169, 110, 0.95); }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="goBack()">返回</button>
+  <div class="wrap">
+    <h1>来源目录与口径说明</h1>
+    <div class="small" id="scope">说明：本平台采用“官方统计 / 公开整理 / 研究参考”分层口径。主分析范围限定为1911年前的民居、官府、皇宫、桥梁四类古建；地级市层为研究参考热力指数，非官方处数。</div>
+    <div class="small">界面中每个图块均提供“来源口径”抽屉：基础字段 + 追溯字段（数据版本号、更新时间、计算公式、样本量、局限性）。</div>
+
+    <h2 id="official">官方统计</h2>
+    <div class="card">
+      <div>全国重点文物保护单位总数：5061处（最新公开源口径）</div>
+      <div>古建筑类：2170处</div>
+      <div>来源建议核验：<a href="https://app.gjzwfw.gov.cn/jmopen/webapp/html5/gjwwjqgzdwwbhdwmlcx/index.html" target="_blank" rel="noopener noreferrer">国家文物局名录查询入口</a></div>
+      <ul class="trace-list">
+        <li><span class="trace-key">数据版本号：</span>v2026.04-official-5061-2170</li>
+        <li><span class="trace-key">更新时间：</span>2026-04-03 20:30（UTC+8）</li>
+        <li><span class="trace-key">计算公式：</span>古建筑类占比 = 2170 / 5061 × 100%</li>
+        <li><span class="trace-key">样本量：</span>全国31省级行政区（含自治区、直辖市）</li>
+        <li><span class="trace-key">局限性：</span>省级口径可用于分布对比；不代表单体完好度、修缮投入与开放状态。</li>
+      </ul>
+    </div>
+
+    <h2 id="category">类型构成 / 省级整理</h2>
+    <div class="card">
+      <div>按“民居、官府、皇宫、桥梁（1911年前）”四类进行结构化整理，用于省级分布、8省联动排行与类别构成展示。</div>
+      <ul class="trace-list">
+        <li><span class="trace-key">数据版本号：</span>v2026.04-category-1911</li>
+        <li><span class="trace-key">更新时间：</span>2026-04-03 20:30（UTC+8）</li>
+        <li><span class="trace-key">计算公式：</span>类别占比 = 类别样本数 / 四类样本总数 × 100%</li>
+        <li><span class="trace-key">样本量：</span>1911年前四类古建样本（民居/官府/皇宫/桥梁）</li>
+        <li><span class="trace-key">局限性：</span>样本为研究整理口径，不等同全国古建全量普查。</li>
+      </ul>
+    </div>
+
+    <h2 id="timeline">保护纪事</h2>
+    <div class="card">
+      <div>以1911年前四类古建为对象，结合1911年后保护、修缮与研究事件梳理时间线，作为传播与教育参考。</div>
+      <ul class="trace-list">
+        <li><span class="trace-key">数据版本号：</span>v2026.04-timeline</li>
+        <li><span class="trace-key">更新时间：</span>2026-04-03 20:30（UTC+8）</li>
+        <li><span class="trace-key">计算公式：</span>时间线排序 = 事件发生时间升序</li>
+        <li><span class="trace-key">样本量：</span>1925-2024 年保护/研究事件条目</li>
+        <li><span class="trace-key">局限性：</span>事件采编存在滞后；时间线用于传播与教学参考。</li>
+      </ul>
+    </div>
+
+    <h2 id="map">地图分布</h2>
+    <div class="card">
+      <div>省级层：古建筑类国保省级处数分布（最新公开源）</div>
+      <div>地级市层：热力指数（研究参考，非官方处数）</div>
+      <ul class="trace-list">
+        <li><span class="trace-key">数据版本号：</span>v2026.04-map-province / v2026.04-map-city-heat</li>
+        <li><span class="trace-key">更新时间：</span>2026-04-03 20:30（UTC+8）</li>
+        <li><span class="trace-key">计算公式：</span>省级值 = 古建筑类国保处数；地市热力 = 省级基数约束 + 文旅/空间代理因子归一化</li>
+        <li><span class="trace-key">样本量：</span>全国31省级行政区 + 省内地级市行政单元</li>
+        <li><span class="trace-key">局限性：</span>地市热力为研究参考值，不代表官方处数。</li>
+      </ul>
+    </div>
+
+    <h2 id="ranking">省份排行 / 联动趋势</h2>
+    <div class="card">
+      <div>8省联动排行按古建筑类国保处数展示；历史时期联动趋势为研究参考，用于分析演示。</div>
+      <ul class="trace-list">
+        <li><span class="trace-key">数据版本号：</span>v2026.04-ranking-8p</li>
+        <li><span class="trace-key">更新时间：</span>2026-04-03 20:30（UTC+8）</li>
+        <li><span class="trace-key">计算公式：</span>排序值 = 省份古建筑类国保处数（8省子集）</li>
+        <li><span class="trace-key">样本量：</span>8省联动对比样本</li>
+        <li><span class="trace-key">局限性：</span>仅覆盖8省联动集合，不代表全国完整排名。</li>
+      </ul>
+    </div>
+
+    <h2 id="priority">保护优先级指数模型</h2>
+    <div class="card">
+      <div>指数公式：历史价值 × 脆弱性 × 可达性压力 × 风险压力（加权几何平均）</div>
+      <div>指标口径：四维因子均为0-100研究量化分值，用于跨省份保护干预优先级比较，不等同于官方处数。</div>
+      <div>调参机制：支持现场调整权重与省份因子，自动归一化并实时重算指数与排行，用于解释模型敏感性。</div>
+      <div>来源说明：历史价值来自公开整理的省份处数与历史时期分布；脆弱性、可达性压力、风险压力为研究代理打分（非官方统计），用于分析演示。</div>
+      <div>使用方式：与省份排行、地图联动，支持“由展示到分析”的任务化研判。</div>
+      <ul class="trace-list">
+        <li><span class="trace-key">数据版本号：</span>v2026.04-priority-model</li>
+        <li><span class="trace-key">更新时间：</span>2026-04-03 20:30（UTC+8）</li>
+        <li><span class="trace-key">计算公式：</span>优先级指数 = 历史价值^w1 × 脆弱性^w2 × 可达性压力^w3 × 风险压力^w4（w归一化）</li>
+        <li><span class="trace-key">样本量：</span>8省联动样本 + 四维因子评分样本</li>
+        <li><span class="trace-key">局限性：</span>研究模型用于比较排序，不等同官方风险评估结论。</li>
+      </ul>
+    </div>
+
+    <h2 id="trend">历史时期分布</h2>
+    <div class="card">
+      <div>与省份排行联动的研究参考趋势，时期范围限定为1911年前。</div>
+      <ul class="trace-list">
+        <li><span class="trace-key">数据版本号：</span>v2026.04-trend-1911</li>
+        <li><span class="trace-key">更新时间：</span>2026-04-03 20:30（UTC+8）</li>
+        <li><span class="trace-key">计算公式：</span>时期占比 = 省份对应时期样本数 / 该省样本总数 × 100%</li>
+        <li><span class="trace-key">样本量：</span>8省联动时期样本</li>
+        <li><span class="trace-key">局限性：</span>时期口径用于趋势说明，存在史料分期差异。</li>
+      </ul>
+    </div>
+
+    <h2 id="components">构件图鉴</h2>
+    <div class="card">
+      <div>基于公开建筑史文献整理的构件知识卡片与释义。</div>
+      <ul class="trace-list">
+        <li><span class="trace-key">数据版本号：</span>v2026.04-components</li>
+        <li><span class="trace-key">更新时间：</span>2026-04-03 20:30（UTC+8）</li>
+        <li><span class="trace-key">计算公式：</span>构件热度 = 词频权重 × 案例覆盖度（研究口径）</li>
+        <li><span class="trace-key">样本量：</span>构件知识卡片与案例图谱条目</li>
+        <li><span class="trace-key">局限性：</span>释义以教学展示为主，地区异名与流派差异未完全展开。</li>
+      </ul>
+    </div>
+
+    <h2 id="ai">AI问答</h2>
+    <div class="card">
+      <div>AI回答采用“结论 + 依据来源 + 口径说明”三段式输出；对象限定为1911年前四类古建，可结合1911年后保护研究事件进行说明。</div>
+      <ul class="trace-list">
+        <li><span class="trace-key">数据版本号：</span>v2026.04-ai-qa</li>
+        <li><span class="trace-key">更新时间：</span>2026-04-03 20:30（UTC+8）</li>
+        <li><span class="trace-key">计算公式：</span>回答结构 = 结论 + 依据来源 + 口径说明</li>
+        <li><span class="trace-key">样本量：</span>平台口径知识库 + 当前会话检索上下文</li>
+        <li><span class="trace-key">局限性：</span>回答受语料覆盖与提示词约束影响，需结合来源目录复核。</li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      window.location.href = "/#/";
+    }
+  </script>
+</body>
+</html>
