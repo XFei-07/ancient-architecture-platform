@@ -7,7 +7,7 @@ const FIXED_THEME: ThemeName = 'emerald'
 
 export const useSettingStore = defineStore('setting', () => {
   const settingShow = ref(false);//设置弹窗显隐
-  const isScale = ref(false);//是否进行全局适配
+  const isScale = ref(true);//默认启用全局适配，避免1920画布在普通屏幕上溢出
   const themeName = ref<ThemeName>(FIXED_THEME);//大屏主题（固定青绿）
   const indexConfig = ref({
     leftBottomSwiper: true,//左轮播
@@ -42,8 +42,15 @@ export const useSettingStore = defineStore('setting', () => {
   const initSetting = () => {
     let settingData: any = localStorage.getItem('loftv-settingData')
     if (settingData) {
-      settingData = JSON.parse(settingData)
-      setIsScale(settingData.isScale)
+      try {
+        settingData = JSON.parse(settingData)
+        // v2 修复了旧版本默认关闭自适应的问题；迁移时统一开启一次。
+        setIsScale(settingData.layoutVersion >= 2 ? settingData.isScale !== false : true)
+      } catch {
+        setIsScale(true)
+      }
+    } else {
+      setIsScale(true)
     }
     setTheme(FIXED_THEME)
     let settingIndexConfig: any = localStorage.getItem('loftv-indexConfig')
@@ -54,6 +61,7 @@ export const useSettingStore = defineStore('setting', () => {
   }
   const setSettingData = () => {
     localStorage.setItem('loftv-settingData', JSON.stringify({
+      layoutVersion: 2,
       isScale: isScale.value,
       themeName: themeName.value,
     }))

@@ -658,4 +658,41 @@ const goBack = () => {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .search-page {
+    height: auto;
+    min-height: calc(100dvh - 120px);
+    overflow: visible;
+  }
+
+  .head-meta,
+  .filter-actions,
+  .card-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .head-meta {
+    gap: 3px;
+  }
+
+  .filter-grid,
+  .result-list {
+    grid-template-columns: 1fr;
+  }
+
+  .result-list {
+    overflow: visible;
+    max-height: none;
+  }
+
+  .filter-actions {
+    gap: 8px;
+  }
+
+  .card-tags {
+    justify-content: flex-start;
+  }
+}
 </style>

@@ -51,6 +51,15 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
     },
     build: {
       outDir: 'dist',
+      rollupOptions: {
+        input: {
+          main: resolve(__dirname, 'index.html'),
+          showroom: resolve(__dirname, 'src/three-showroom.js'),
+        },
+        output: {
+          entryFileNames: 'assets/[name].js',
+        },
+      },
     },
   }
 

@@ -55,7 +55,7 @@ onBeforeUnmount(() => {
     <div class="guang"></div>
     <div class="d-flex jc-center">
       <div class="title">
-        <span class="title-text">中国古建筑：古建筑类国保时空分布平台</span>
+        <span class="title-text">青檐千载：中国古建筑时空图谱</span>
       </div>
     </div>
     <div class="quick-links">
@@ -187,6 +187,53 @@ onBeforeUnmount(() => {
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+  }
+}
+
+@media (max-width: 768px) {
+  .title_wrap {
+    height: auto;
+    min-height: 112px;
+    padding-bottom: 6px;
+
+    .guang {
+      bottom: -12px;
+    }
+
+    .quick-links {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: 100%;
+      max-width: none;
+      padding: 52px 2px 0;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .quick-item {
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      font-size: 11px;
+    }
+
+    .timers {
+      display: none;
+    }
+  }
+
+  .title {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 50px;
+    line-height: 44px;
+
+    .title-text {
+      font-size: clamp(19px, 5.6vw, 25px);
+      letter-spacing: 2px;
+    }
   }
 }
 </style>

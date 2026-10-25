@@ -1137,4 +1137,25 @@ watch(
     bottom: 8px;
   }
 }
+
+@media (max-width: 768px) {
+  .sandbox-page {
+    height: auto;
+    min-height: calc(100dvh - 120px);
+    overflow: visible;
+  }
+
+  .sandbox-layout {
+    min-height: 0;
+  }
+
+  .sandbox-panel {
+    height: auto;
+    min-height: 420px;
+  }
+
+  .sandbox-center {
+    min-height: 460px;
+  }
+}
 </style>

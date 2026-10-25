@@ -12,7 +12,6 @@ import RightBottom from "./right-bottom.vue";
 import { useRoute } from "vue-router";
 import { linkedProvince, provinceTrendData } from "./compare-link";
 
-const videoBgRef = ref<HTMLVideoElement | null>(null);
 const route = useRoute();
 const linkedByQuery = ref(false);
 
@@ -32,9 +31,6 @@ const applySearchLinkage = async () => {
 };
 
 onMounted(() => {
-  if (videoBgRef.value) {
-    videoBgRef.value.playbackRate = 0.8;
-  }
   applySearchLinkage();
 });
 
@@ -49,10 +45,6 @@ watch(
 
 <template>
   <div class="index-box">
-    <!-- Video background -->
-    <video class="video-bg" autoplay muted loop playsinline ref="videoBgRef">
-      <source :src="'/video/f1feb4f37e2d379716cfb28da0019469_raw.mp4'" type="video/mp4" />
-    </video>
     <div class="contetn_left">
       <!-- <div class="pagetab">
         <div class="item">实时监测</div>
@@ -112,7 +104,7 @@ watch(
       </ItemWrap>
     </div>
     <div class="contetn_center">
-      <CenterMap class="contetn_center_top" title="中国古建筑地域分布全景图" />
+      <CenterMap class="contetn_center_top" title="青檐千载：中国古建筑时空图谱" />
       <ItemWrap
         class="contetn_center-bottom"
         title="中国古建筑 · 青檐智问"
@@ -200,17 +192,6 @@ watch(
   position: relative;
 }
 
-.video-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.15;
-}
 //左边 右边 结构一样
 .contetn_left,
 .contetn_right {
@@ -240,5 +221,48 @@ watch(
 .priority-index-item :deep(.lineage-wrap) {
   top: -28px;
   right: 8px;
+}
+
+@media (max-width: 768px) {
+  .index-box {
+    display: block;
+    min-height: 0;
+  }
+
+  .contetn_left,
+  .contetn_right,
+  .contetn_center {
+    width: 100%;
+    margin: 0;
+    display: flex;
+    gap: 10px;
+  }
+
+  .contetn_left,
+  .contetn_right {
+    justify-content: flex-start;
+  }
+
+  .contetn_center {
+    margin: 10px 0;
+
+    .contetn_center_top {
+      min-height: 620px;
+    }
+
+    .contetn_center-bottom {
+      height: 420px;
+    }
+  }
+
+  .contetn_lr-item {
+    width: 100%;
+    height: 350px;
+    flex: none;
+  }
+
+  .priority-index-item {
+    height: 560px;
+  }
 }
 </style>

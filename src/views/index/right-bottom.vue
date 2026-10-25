@@ -2,20 +2,20 @@
 import { reactive } from "vue";
 import SeamlessScroll from "@/components/seamless-scroll";
 
-import imgDougong from "@/assets/img/components/dougong.jpg";
-import imgSoumao from "@/assets/img/components/soumao.jpg";
-import imgXieshanding from "@/assets/img/components/xieshanding.jpg";
-import imgZaojing from "@/assets/img/components/zaojing.jpg";
-import imgQueti from "@/assets/img/components/queti.jpg";
-import imgYueliang from "@/assets/img/components/yueliang.jpg";
-import imgChiwen from "@/assets/img/components/chiwen.jpg";
-import imgBaogushi from "@/assets/img/components/baogushi.jpg";
-import imgQiaotai from "@/assets/img/components/qiaotai.jpg";
-import imgQiaodun from "@/assets/img/components/qiaodun.jpg";
-import imgGongquan from "@/assets/img/components/gongquan.jpg";
-import imgFenshuijian from "@/assets/img/components/fenshuijian.jpg";
-import imgLanbanWangzhu from "@/assets/img/components/lanban_wangzhu.jpg";
-import imgYanchiqiang from "@/assets/img/components/yanchiqiang.jpg";
+import imgDougong from "@/assets/img/components/dougong.webp";
+import imgSoumao from "@/assets/img/components/soumao.webp";
+import imgXieshanding from "@/assets/img/components/xieshanding.webp";
+import imgZaojing from "@/assets/img/components/zaojing.webp";
+import imgQueti from "@/assets/img/components/queti.webp";
+import imgYueliang from "@/assets/img/components/yueliang.webp";
+import imgChiwen from "@/assets/img/components/chiwen.webp";
+import imgBaogushi from "@/assets/img/components/baogushi.webp";
+import imgQiaotai from "@/assets/img/components/qiaotai.webp";
+import imgQiaodun from "@/assets/img/components/qiaodun.webp";
+import imgGongquan from "@/assets/img/components/gongquan.webp";
+import imgFenshuijian from "@/assets/img/components/fenshuijian.webp";
+import imgLanbanWangzhu from "@/assets/img/components/lanban_wangzhu.webp";
+import imgYanchiqiang from "@/assets/img/components/yanchiqiang.webp";
 
 interface ComponentItem {
   name: string;

@@ -28,6 +28,5 @@ components.d.ts
 *.sln
 *.sw?
 
-# large assets
-public/models/
-public/video/
+# Optimized static assets are small enough to ship with the production build.
+# Keeping them in Git prevents Vercel from deploying pages whose media requests 404.

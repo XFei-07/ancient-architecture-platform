@@ -106,4 +106,32 @@ const duration = ref(2);
     }
   }
 }
+
+@media (max-width: 768px) {
+  .user_Overview {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: 100%;
+
+    li {
+      min-width: 0;
+
+      p {
+        height: auto;
+        margin: 0;
+        padding: 0 6px;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .user_Overview_nums {
+        width: 72px;
+        height: 72px;
+        margin: 8px auto 4px;
+        line-height: 72px;
+        font-size: 19px;
+      }
+    }
+  }
+}
 </style>

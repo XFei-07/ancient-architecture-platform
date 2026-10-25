@@ -833,6 +833,52 @@ onBeforeUnmount(() => {
   }
 }
 
+@media (max-width: 768px) {
+  .centermap {
+    margin-bottom: 10px;
+
+    .maptitle {
+      height: 48px;
+
+      .titletext {
+        font-size: 18px;
+        letter-spacing: 2px;
+        text-align: center;
+      }
+    }
+
+    .mapwrap {
+      height: 560px;
+
+      .quanguo {
+        top: -40px;
+        right: 8px;
+      }
+
+      .province-detail-card {
+        left: 8px;
+        right: 8px;
+        width: auto;
+        max-height: calc(100% - 140px);
+      }
+    }
+  }
+
+  .entry-btn-wrap {
+    left: 8px;
+    right: 8px;
+    bottom: 12px;
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .entry-btn {
+    flex: 1;
+    padding: 9px 8px;
+    font-size: 11px;
+  }
+}
+
 @keyframes glowBreathe {
   0%, 100% {
     box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), 0 0 12px rgba(212, 175, 55, 0.1);

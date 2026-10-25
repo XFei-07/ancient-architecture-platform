@@ -135,4 +135,33 @@ $item_title_content-height: calc(100% - 38px);
 .item_content_wrap {
   position: relative;
 }
+
+@media (max-width: 768px) {
+  .item_title {
+    height: auto;
+    min-height: 48px;
+    padding: 5px 0;
+    line-height: 1.4;
+    box-sizing: border-box;
+
+    .zuo,
+    .you {
+      width: 34px;
+      flex: 0 0 34px;
+    }
+
+    .title-inner {
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+  }
+
+  :deep(.dv-border-box-content) {
+    padding: 6px 10px 4px;
+  }
+
+  .item_title_content {
+    height: calc(100% - 48px);
+  }
+}
 </style>

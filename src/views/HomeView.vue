@@ -39,7 +39,7 @@ onBeforeUnmount(() => {
   <scale-screen
     width="1920"
     height="1080"
-    :delay="500"
+    :delay="80"
     :fullScreen="false"
     :boxStyle="{
       background: 'var(--theme-bg-solid)',
@@ -49,7 +49,6 @@ onBeforeUnmount(() => {
     :autoScale="isScale"
   >
     <div class="content_wrap" :class="themeClass">
-      <video class="video-bg" :src="'/video/bg.mp4'" autoplay loop muted playsinline></video>
       <div class="video-overlay"></div>
       <div class="opening-cinematic" :class="{ leave: openingLeave }" v-if="showOpening">
         <div class="opening-grid"></div>
@@ -75,16 +74,6 @@ onBeforeUnmount(() => {
   position: relative;
   background: transparent;
 
-  .video-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-  }
-
   .video-overlay {
     position: absolute;
     top: 0;
@@ -102,6 +91,43 @@ onBeforeUnmount(() => {
     height: 100%;
     padding: 16px;
     box-sizing: border-box;
+  }
+}
+
+@media (max-width: 768px) {
+  .content_wrap {
+    height: auto;
+    min-height: 100dvh;
+
+    .video-overlay {
+      position: fixed;
+    }
+
+    .content_inner {
+      height: auto;
+      min-height: 100dvh;
+      padding: 8px;
+    }
+  }
+
+  .opening-cinematic {
+    position: fixed;
+  }
+
+  .opening-title {
+    padding: 0 18px;
+    font-size: 25px;
+    letter-spacing: 4px;
+    text-align: center;
+  }
+
+  .opening-subtitle {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .opening-line {
+    width: min(78vw, 320px);
   }
 }
 
