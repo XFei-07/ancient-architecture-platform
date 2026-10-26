@@ -7,14 +7,29 @@ import router from './router'
 import '@/assets/css/main.scss'
 import '@/assets/css/tailwind.css'
 
-import {registerEcharts} from "@/plugins/echarts"
-//不使用mock 请注释掉
-import { mockXHR } from "@/mock/index";
-mockXHR()
-
 const app = createApp(App)
-registerEcharts(app)
 app.use(createPinia())
 app.use(router)
 
-app.mount('#app')
+const compactDevice = window.matchMedia('(max-width: 768px)').matches
+  || window.matchMedia('(pointer: coarse)').matches
+const forceDesktop = new URLSearchParams(window.location.search).get('view') === 'desktop'
+const needsDashboardRuntime = !compactDevice
+  || forceDesktop
+  || window.location.hash.startsWith('#/decision-sandbox')
+
+const bootstrap = async () => {
+  // 手机首页不加载 ECharts 与 MockJS；两者只服务完整大屏和决策沙盘。
+  if (needsDashboardRuntime) {
+    const [{ registerEcharts }, { mockXHR }] = await Promise.all([
+      import('@/plugins/echarts'),
+      import('@/mock/index'),
+    ])
+    registerEcharts(app)
+    mockXHR()
+  }
+
+  app.mount('#app')
+}
+
+bootstrap()

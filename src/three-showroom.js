@@ -23,7 +23,8 @@ const loadingOverlay = document.getElementById("loading-overlay");
 const retryButton = document.getElementById("loading-retry");
 
 let currentModel = null;
-let currentKey = compactDevice ? "guanshu" : "qiaoliang";
+// 手机默认使用压缩后的轻量四合院模型；其余模型仍可按需切换。
+let currentKey = compactDevice ? "siheyuan" : "qiaoliang";
 let requestId = 0;
 let lastFrame = 0;
 
@@ -250,7 +251,8 @@ renderer.domElement.addEventListener("webglcontextlost", (event) => {
 const animate = (time) => {
   requestAnimationFrame(animate);
   if (document.hidden) return;
-  if (compactDevice && time - lastFrame < 33) return;
+  // 移动设备限制到约 20 FPS，降低持续渲染造成的发热与滚动卡顿。
+  if (compactDevice && time - lastFrame < 50) return;
   lastFrame = time;
   controls.update();
   renderer.render(scene, camera);
@@ -266,7 +268,7 @@ const resize = () => {
 window.addEventListener("resize", resize, { passive: true });
 
 if (compactDevice && typeof window.switchBuilding === "function") {
-  window.switchBuilding("guanshu");
+  window.switchBuilding("siheyuan");
 } else {
   loadModel(currentKey);
 }

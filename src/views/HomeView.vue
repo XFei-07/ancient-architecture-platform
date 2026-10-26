@@ -1,19 +1,27 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import { RouterView } from "vue-router";
 import ScaleScreen from "@/components/scale-screen";
-import Headers from "./header.vue";
-import Setting from "./setting.vue";
 import { useSettingStore } from "@/stores/index";
 import { storeToRefs } from "pinia";
-import MessageContent from "@/components/Plugins/MessageContent";
+
+const Headers = defineAsyncComponent(() => import("./header.vue"));
+const Setting = defineAsyncComponent(() => import("./setting.vue"));
+const MessageContent = defineAsyncComponent(() => import("@/components/Plugins/MessageContent"));
 
 const settingStore = useSettingStore();
 const { isScale, themeName } = storeToRefs(settingStore);
 const wrapperStyle = {};
 
 const themeClass = computed(() => `theme-${themeName.value}`);
-const showOpening = ref(true);
+const forceDesktop = new URLSearchParams(window.location.search).get("view") === "desktop";
+const mobileMode = ref(
+  !forceDesktop && (
+    window.matchMedia("(max-width: 768px)").matches
+    || window.matchMedia("(pointer: coarse)").matches
+  )
+);
+const showOpening = ref(!mobileMode.value);
 const openingLeave = ref(false);
 
 let openingLeaveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -21,6 +29,7 @@ let openingHideTimer: ReturnType<typeof setTimeout> | null = null;
 
 onMounted(() => {
   settingStore.initSetting();
+  if (mobileMode.value) return;
   openingLeaveTimer = setTimeout(() => {
     openingLeave.value = true;
   }, 1900);
@@ -36,7 +45,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <main v-if="mobileMode" class="mobile-app-shell" :class="themeClass">
+    <RouterView />
+  </main>
   <scale-screen
+    v-else
     width="1920"
     height="1080"
     :delay="80"
@@ -63,9 +76,19 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </scale-screen>
-  <Setting />
+  <Setting v-if="!mobileMode" />
 </template>
 <style lang="scss" scoped>
+.mobile-app-shell {
+  width: 100%;
+  min-height: 100dvh;
+  color: #edf8f1;
+  background:
+    radial-gradient(circle at 92% 4%, rgba(99, 157, 128, 0.2), transparent 34%),
+    radial-gradient(circle at 0 40%, rgba(201, 169, 110, 0.1), transparent 32%),
+    #07110d;
+}
+
 .content_wrap {
   --theme-bg-solid: #1a1410;
   --theme-overlay: rgba(26, 20, 16, 0.7);
@@ -91,43 +114,6 @@ onBeforeUnmount(() => {
     height: 100%;
     padding: 16px;
     box-sizing: border-box;
-  }
-}
-
-@media (max-width: 768px) {
-  .content_wrap {
-    height: auto;
-    min-height: 100dvh;
-
-    .video-overlay {
-      position: fixed;
-    }
-
-    .content_inner {
-      height: auto;
-      min-height: 100dvh;
-      padding: 8px;
-    }
-  }
-
-  .opening-cinematic {
-    position: fixed;
-  }
-
-  .opening-title {
-    padding: 0 18px;
-    font-size: 25px;
-    letter-spacing: 4px;
-    text-align: center;
-  }
-
-  .opening-subtitle {
-    font-size: 10px;
-    letter-spacing: 2px;
-  }
-
-  .opening-line {
-    width: min(78vw, 320px);
   }
 }
 
